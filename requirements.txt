@@ -1,0 +1,9 @@
+diffusers==0.30.0
+torch --index-url https://download.pytorch.org/whl/cu124
+transformers==4.42.4
+accelerate
+transformers[sentencepiece]
+boto3
+flask
+gunicorn
+python-dotenv
