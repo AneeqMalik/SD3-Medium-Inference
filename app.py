@@ -68,7 +68,7 @@ async def predict(request: Request):
     )
 
     # Upload images to S3 and collect URLs
-    bucket_name = os.environ.get('BUCKET_NAME')
+    bucket_name = os.environ.get('bucket_name')
     if not bucket_name:
         raise HTTPException(status_code=500, detail="Bucket name not found in environment variables")
 
