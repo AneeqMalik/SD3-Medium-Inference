@@ -20,7 +20,7 @@ login(token=hf_token)
 app = Flask(__name__)
 
 # Load the pipeline once the application starts.
-model = load_sd3_t4_pipeline()
+load_sd3_t4_pipeline()
 
 # Setup boto3 session
 aws_access_key_id = os.environ.get('aws_access_key_id')
