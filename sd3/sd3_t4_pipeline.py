@@ -157,20 +157,23 @@ def get_image(prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_p
   return image
 
 def generate_sd3_t4_image(prompt, neg_prompt='', num_inference_steps=28, guidance_scale=7, num_images_per_prompt=1, generator=None,
-			   timesteps=None, latents=None, output_type='pil', return_dict=True, joint_attention_kwargs= None,
+         timesteps=None, latents=None, output_type='pil', return_dict=True, joint_attention_kwargs= None,
                           clip_skip=None, callback_on_step_end=None, callback_on_step_end_tensor_inputs=['latents'], max_sequence_length=512):
                           
   prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds = get_text_embeddings(prompt, neg_prompt)
   move_transformer_modules(device='cuda', last_layers=400)
   move_encoder3_modules(device='cpu', last_layers=250)
   move_transformer_modules(device='cuda', last_layers='all')
+  clear_memory()
   image = get_image(prompt_embeds, prompt_neg_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds,
-           	     num_inference_steps=num_inference_steps, guidance_scale=guidance_scale, generator=generator, max_sequence_length= max_sequence_length,
-           	     timesteps=timesteps, latents=latents, output_type=output_type, return_dict=return_dict, joint_attention_kwargs=joint_attention_kwargs,
-           	     clip_skip=clip_skip, callback_on_step_end=callback_on_step_end, callback_on_step_end_tensor_inputs=callback_on_step_end_tensor_inputs,num_images_per_prompt=num_images_per_prompt)
+                 num_inference_steps=num_inference_steps, guidance_scale=guidance_scale, generator=generator, max_sequence_length= max_sequence_length,
+                 timesteps=timesteps, latents=latents, output_type=output_type, return_dict=return_dict, joint_attention_kwargs=joint_attention_kwargs,
+                 clip_skip=clip_skip, callback_on_step_end=callback_on_step_end, callback_on_step_end_tensor_inputs=callback_on_step_end_tensor_inputs,num_images_per_prompt=num_images_per_prompt)
+  clear_memory()
   move_encoder3_modules(device='cuda', last_layers=150)
   move_transformer_modules(device='cpu', last_layers='all')
   move_encoder3_modules(device='cuda', last_layers=250) 
+  clear_memory()
   return image
 
 
