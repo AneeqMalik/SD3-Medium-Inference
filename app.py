@@ -47,8 +47,8 @@ def predict():
     """
     Function which responds to the invocations requests.
     """
-   # Get data from the POST request
-    data = request.get_data().decode('utf-8')
+    # Get data from the POST request
+    data = json.loads(request.get_data().decode('utf-8'))
     prompt = data.get("prompt", "")
     if not prompt:
         return jsonify({"error": "Prompt is required"}), 400
