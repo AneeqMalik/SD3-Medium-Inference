@@ -56,7 +56,6 @@ async def predict(request: Request):
     negative_prompt = data.get("negative_prompt", "")
     num_inference_steps = data.get("num_inference_steps", 28)
     guidance_scale = data.get("guidance_scale", 7)
-    num_images_per_prompt = data.get("num_images_per_prompt", 1)
 
     # Generate images
     generated_images = generate_sd3_t4_image(
@@ -64,7 +63,6 @@ async def predict(request: Request):
         negative_prompt,
         num_inference_steps,
         guidance_scale,
-        num_images_per_prompt,
     )
 
     # Upload images to S3 and collect URLs
