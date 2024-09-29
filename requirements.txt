@@ -4,7 +4,7 @@ transformers==4.42.4
 accelerate
 transformers[sentencepiece]
 boto3
-flask
-gunicorn
+fastapi
+uvicorn
 lark
 python-dotenv

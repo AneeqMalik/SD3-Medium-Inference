@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from io import BytesIO
 
 from sd3.sd3_t4_pipeline import load_sd3_t4_pipeline, generate_sd3_t4_image
@@ -7,7 +8,6 @@ from huggingface_hub import login
 import boto3
 from dotenv import load_dotenv
 import json
-
 
 load_dotenv()
 
@@ -17,7 +17,7 @@ if not hf_token:
     raise ValueError("Hugging Face token not found in environment variables")
 login(token=hf_token)
 
-app = Flask(__name__)
+app = FastAPI()
 
 # Load the pipeline once the application starts.
 load_sd3_t4_pipeline()
@@ -37,21 +37,21 @@ boto_session = boto3.setup_default_session(
 s3_client = boto3.client('s3')
 
 # Define an endpoint for health check
-@app.route('/ping', methods=['GET'])
-def ping():
-  return 'The server is running OK!', 200
+@app.get('/ping')
+async def ping():
+    return 'The server is running OK!'
 
 # Define an endpoint for making predictions
-@app.route('/invocations', methods=['POST'])
-def predict():
+@app.post('/invocations')
+async def predict(request: Request):
     """
     Function which responds to the invocations requests.
     """
     # Get data from the POST request
-    data = json.loads(request.get_data().decode('utf-8'))
+    data = await request.json()
     prompt = data.get("prompt", "")
     if not prompt:
-        return jsonify({"error": "Prompt is required"}), 400
+        raise HTTPException(status_code=400, detail="Prompt is required")
 
     negative_prompt = data.get("negative_prompt", "")
     num_inference_steps = data.get("num_inference_steps", 28)
@@ -70,7 +70,7 @@ def predict():
     # Upload images to S3 and collect URLs
     bucket_name = os.environ.get('BUCKET_NAME')
     if not bucket_name:
-        return jsonify({"error": "Bucket name not found in environment variables"}), 500
+        raise HTTPException(status_code=500, detail="Bucket name not found in environment variables")
 
     image_urls = []
     for idx, image in enumerate(generated_images):
@@ -83,6 +83,6 @@ def predict():
             image_url = f"https://{bucket_name}.s3.amazonaws.com/{image_key}"
             image_urls.append(image_url)
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            raise HTTPException(status_code=500, detail=str(e))
 
-    return json.dumps({"image_urls": image_urls})
+    return JSONResponse(content={"image_urls": image_urls})
