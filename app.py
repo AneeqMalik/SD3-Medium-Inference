@@ -80,7 +80,13 @@ async def predict(request: Request):
             image_buffer.seek(0)
             image_key = f"generated_images/{prompt.replace(' ', '_')}_{idx}.png"
             s3_client.upload_fileobj(image_buffer, bucket_name, image_key)
-            image_url = f"https://{bucket_name}.s3.amazonaws.com/{image_key}"
+            
+            # Generate a pre-signed URL for the uploaded image
+            image_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': bucket_name, 'Key': image_key},
+                ExpiresIn=3600  # URL expiration time in seconds
+            )
             image_urls.append(image_url)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
