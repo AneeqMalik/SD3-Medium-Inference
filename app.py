@@ -39,7 +39,7 @@ s3_client = boto3.client('s3')
 # Define an endpoint for health check
 @app.route('/ping', methods=['GET'])
 def ping():
-  return '', 200
+  return 'The server is running OK!', 200
 
 # Define an endpoint for making predictions
 @app.route('/invocations', methods=['POST'])

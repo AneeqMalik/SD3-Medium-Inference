@@ -6,4 +6,5 @@ transformers[sentencepiece]
 boto3
 flask
 gunicorn
+lark
 python-dotenv
